@@ -34,8 +34,7 @@ class TestHyperlink(TestCase):
         """
         called_with = []
 
-        def raisesExpected(*args, **kwargs):
-            # type: (Any, Any) -> None
+        def raisesExpected(*args: Any, **kwargs: Any) -> None:
             called_with.append((args, kwargs))
             raise _ExpectedException
 
@@ -44,15 +43,13 @@ class TestHyperlink(TestCase):
         )
         self.assertEqual(called_with, [((1,), {"keyword": True})])
 
-    def test_assertRaisesWithCallableUnexpectedException(self):
-        # type: () -> None
+    def test_assertRaisesWithCallableUnexpectedException(self) -> None:
         """When given a callable that raises an unexpected exception,
         HyperlinkTestCase.assertRaises raises that exception.
 
         """
 
-        def doesNotRaiseExpected(*args, **kwargs):
-            # type: (Any, Any) -> None
+        def doesNotRaiseExpected(*args: Any, **kwargs: Any) -> None:
             raise _UnexpectedException
 
         try:
@@ -62,15 +59,13 @@ class TestHyperlink(TestCase):
         except _UnexpectedException:
             pass
 
-    def test_assertRaisesWithCallableDoesNotRaise(self):
-        # type: () -> None
+    def test_assertRaisesWithCallableDoesNotRaise(self) -> None:
         """HyperlinkTestCase.assertRaises raises an AssertionError when given
         a callable that, when called, does not raise any exception.
 
         """
 
-        def doesNotRaise(*args, **kwargs):
-            # type: (Any, Any) -> None
+        def doesNotRaise(*args: Any, **kwargs: Any) -> None:
             pass
 
         try:
@@ -78,8 +73,7 @@ class TestHyperlink(TestCase):
         except AssertionError:
             pass
 
-    def test_assertRaisesContextManager(self):
-        # type: () -> None
+    def test_assertRaisesContextManager(self) -> None:
         """HyperlinkTestCase.assertRaises does not raise an AssertionError
         when used as a context manager with a suite that raises the
         expected exception.  The context manager stores the exception
@@ -93,8 +87,7 @@ class TestHyperlink(TestCase):
             isinstance(cm.exception, _ExpectedException)
         )
 
-    def test_assertRaisesContextManagerUnexpectedException(self):
-        # type: () -> None
+    def test_assertRaisesContextManagerUnexpectedException(self) -> None:
         """When used as a context manager with a block that raises an
         unexpected exception, HyperlinkTestCase.assertRaises raises
         that unexpected exception.
@@ -106,8 +99,7 @@ class TestHyperlink(TestCase):
         except _UnexpectedException:
             pass
 
-    def test_assertRaisesContextManagerDoesNotRaise(self):
-        # type: () -> None
+    def test_assertRaisesContextManagerDoesNotRaise(self) -> None:
         """HyperlinkTestcase.assertRaises raises an AssertionError when used
         as a context manager with a block that does not raise any
         exception.

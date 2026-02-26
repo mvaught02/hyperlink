@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 # -*- coding: utf-8 -*-
 """Hyperlink provides Pythonic URL parsing, construction, and rendering.
 
@@ -31,6 +32,7 @@ from typing import (
     cast,
     TYPE_CHECKING,
 )
+
 if TYPE_CHECKING:
     from typing import (
         Type,
@@ -43,8 +45,11 @@ if TYPE_CHECKING:
         TypeVar,
         Union,
     )
+
     NoneType: Type[None] = type(None)
-    QueryPairs = Tuple[Tuple[str, Optional[str]], ...]  # internal representation
+    QueryPairs = Tuple[
+        Tuple[str, Optional[str]], ...
+    ]  # internal representation
     QueryParameters = Union[
         Mapping[str, Optional[str]],
         QueryPairs,
@@ -177,7 +182,9 @@ _QUERY_KEY_SAFE = _UNRESERVED_CHARS | _QUERY_VALUE_SAFE - set("=")
 _QUERY_KEY_DELIMS = _ALL_DELIMS - _QUERY_KEY_SAFE
 
 
-def _make_decode_map(delims: Iterable[str], allow_percent: bool = False) -> Mapping[bytes, bytes]:
+def _make_decode_map(
+    delims: Iterable[str], allow_percent: bool = False
+) -> Mapping[bytes, bytes]:
     ret = dict(_HEX_CHAR_MAP)
     if not allow_percent:
         delims = set(delims) | set(["%"])
@@ -262,9 +269,11 @@ def _encode_schemeless_path_part(text: str, maximal: bool = True) -> str:
         return "".join([_SCHEMELESS_PATH_PART_QUOTE_MAP[b] for b in bytestr])
     return "".join(
         [
-            _SCHEMELESS_PATH_PART_QUOTE_MAP[t]
-            if t in _SCHEMELESS_PATH_DELIMS
-            else t
+            (
+                _SCHEMELESS_PATH_PART_QUOTE_MAP[t]
+                if t in _SCHEMELESS_PATH_DELIMS
+                else t
+            )
             for t in text
         ]
     )
@@ -449,7 +458,10 @@ NO_QUERY_PLUS_SCHEMES = set()
 
 
 def register_scheme(
-    text: str, uses_netloc: bool = True, default_port: Optional[int] = None, query_plus_is_space: bool = True
+    text: str,
+    uses_netloc: bool = True,
+    default_port: Optional[int] = None,
+    query_plus_is_space: bool = True,
 ) -> None:
     """Registers new scheme information, resulting in correct port and
     slash behavior from the URL object. There are dozens of standard
@@ -499,7 +511,9 @@ def register_scheme(
     return
 
 
-def scheme_uses_netloc(scheme: str, default: Optional[bool] = None) -> Optional[bool]:
+def scheme_uses_netloc(
+    scheme: str, default: Optional[bool] = None
+) -> Optional[bool]:
     """Whether or not a URL uses :code:`:` or :code:`://` to separate the
     scheme from the rest of the URL depends on the scheme's own
     standard definition. There is no way to infer this behavior
@@ -560,7 +574,12 @@ def _typecheck(name: str, value: T, *types: Type[Any]) -> T:
     return value
 
 
-def _textcheck(name: str, value: T, delims: Iterable[str] = frozenset(), nullable: bool = False) -> T:
+def _textcheck(
+    name: str,
+    value: T,
+    delims: Iterable[str] = frozenset(),
+    nullable: bool = False,
+) -> T:
     if not isinstance(value, str):
         if nullable and value is None:
             # used by query string values
@@ -590,7 +609,9 @@ def iter_pairs(iterable: Iterable[Any]) -> Iterator[Any]:
     return iter(iterable)
 
 
-def _decode_unreserved(text: str, normalize_case: bool = False, encode_stray_percents: bool = False) -> str:
+def _decode_unreserved(
+    text: str, normalize_case: bool = False, encode_stray_percents: bool = False
+) -> str:
     return _percent_decode(
         text,
         normalize_case=normalize_case,
@@ -610,7 +631,9 @@ def _decode_userinfo_part(
     )
 
 
-def _decode_path_part(text: str, normalize_case: bool = False, encode_stray_percents: bool = False) -> str:
+def _decode_path_part(
+    text: str, normalize_case: bool = False, encode_stray_percents: bool = False
+) -> str:
     """
     >>> _decode_path_part(u'%61%77%2f%7a')
     u'aw%2fz'
@@ -625,7 +648,9 @@ def _decode_path_part(text: str, normalize_case: bool = False, encode_stray_perc
     )
 
 
-def _decode_query_key(text: str, normalize_case: bool = False, encode_stray_percents: bool = False) -> str:
+def _decode_query_key(
+    text: str, normalize_case: bool = False, encode_stray_percents: bool = False
+) -> str:
     return _percent_decode(
         text,
         normalize_case=normalize_case,
@@ -1154,7 +1179,9 @@ class URL(object):
         # first, a bit of twisted compat
         with_password = kw.pop("includeSecrets", with_password)
         if kw:
-            raise TypeError("got unexpected keyword arguments: %r" % list(kw.keys()))
+            raise TypeError(
+                "got unexpected keyword arguments: %r" % list(kw.keys())
+            )
         host = self.host
         if ":" in host:
             hostport = ["[" + host + "]"]
@@ -1612,9 +1639,11 @@ class URL(object):
                 [
                     (
                         _encode_query_key(k, maximal=True),
-                        _encode_query_value(v, maximal=True)
-                        if v is not None
-                        else None,
+                        (
+                            _encode_query_value(v, maximal=True)
+                            if v is not None
+                            else None
+                        ),
                     )
                     for k, v in self.query
                 ]
@@ -1954,7 +1983,12 @@ class DecodedURL(object):
     .. versionadded:: 18.0.0
     """
 
-    def __init__(self, url: URL = _EMPTY_URL, lazy: bool = False, query_plus_is_space: Optional[bool] = None) -> None:
+    def __init__(
+        self,
+        url: URL = _EMPTY_URL,
+        lazy: bool = False,
+        query_plus_is_space: Optional[bool] = None,
+    ) -> None:
         self._url = url
         if query_plus_is_space is None:
             query_plus_is_space = url.scheme not in NO_QUERY_PLUS_SCHEMES
@@ -1962,11 +1996,16 @@ class DecodedURL(object):
         if not lazy:
             # cache the following, while triggering any decoding
             # issues with decodable fields
-            self.host, self.userinfo, self.path, self.query, self.fragment
+            _ = (self.host, self.userinfo, self.path, self.query, self.fragment)
         return
 
     @classmethod
-    def from_text(cls, text: str, lazy: bool = False, query_plus_is_space: Optional[bool] = None) -> DecodedURL:
+    def from_text(
+        cls,
+        text: str,
+        lazy: bool = False,
+        query_plus_is_space: Optional[bool] = None,
+    ) -> DecodedURL:
         """\
         Make a `DecodedURL` instance from any text string containing a URL.
 
@@ -2096,11 +2135,13 @@ class DecodedURL(object):
                 "QueryPairs",
                 tuple(
                     tuple(
-                        _percent_decode(
-                            predecode(x), raise_subencoding_exc=True
+                        (
+                            _percent_decode(
+                                predecode(x), raise_subencoding_exc=True
+                            )
+                            if x is not None
+                            else None
                         )
-                        if x is not None
-                        else None
                         for x in (k, v)
                     )
                     for k, v in self._url.query
@@ -2302,20 +2343,27 @@ class DecodedURL(object):
 
 # Add some overloads so that parse gives a better return value.
 if TYPE_CHECKING:
+
     @overload
     def parse(url: str, decoded: Literal[False], lazy: bool = False) -> URL:
         """Passing decoded=False returns URL."""
 
     @overload
-    def parse(url: str, decoded: Literal[True] = True, lazy: bool = False) -> DecodedURL:
+    def parse(
+        url: str, decoded: Literal[True] = True, lazy: bool = False
+    ) -> DecodedURL:
         """Passing decoded=True (or the default value) returns DecodedURL."""
 
     @overload
-    def parse(url: str, decoded: bool = True, lazy: bool = False) -> Union[URL, DecodedURL]:
+    def parse(
+        url: str, decoded: bool = True, lazy: bool = False
+    ) -> Union[URL, DecodedURL]:
         """If decoded is not a literal we don't know the return type."""
 
 
-def parse(url: str, decoded: bool = True, lazy: bool = False) -> Union[URL, DecodedURL]:
+def parse(
+    url: str, decoded: bool = True, lazy: bool = False
+) -> Union[URL, DecodedURL]:
     """
     Automatically turn text into a structured URL object.
 

@@ -111,7 +111,9 @@ else:
     _idnaCharacters: str = ""
 
     @composite
-    def idna_text(draw: DrawCallable, min_size: int = 1, max_size: Optional[int] = None) -> str:
+    def idna_text(
+        draw: DrawCallable, min_size: int = 1, max_size: Optional[int] = None
+    ) -> str:
         """
         A strategy which generates IDNA-encodable text.
 
@@ -202,7 +204,11 @@ else:
         return label
 
     @composite
-    def hostnames(draw: DrawCallable, allow_leading_digit: bool = True, allow_idn: bool = True) -> str:
+    def hostnames(
+        draw: DrawCallable,
+        allow_leading_digit: bool = True,
+        allow_idn: bool = True,
+    ) -> str:
         """
         A strategy which generates host names.
 
@@ -218,8 +224,10 @@ else:
                 str,
                 draw(
                     hostname_labels(allow_idn=allow_idn).filter(
-                        lambda l: (
-                            True if allow_leading_digit else l[0] not in digits
+                        lambda label: (
+                            True
+                            if allow_leading_digit
+                            else label[0] not in digits
                         )
                     )
                 ),
@@ -239,7 +247,24 @@ else:
 
         # Trim off labels until the total host name length fits in 252
         # characters.  This avoids having to filter the data.
-        while sum(len(label) for label in labels) + len(labels) - 1 > 252:
+        # For IDNs, the length must also be checked after Punycode encoding,
+        # because the encoded form may be much longer due to the 'xn--' prefix
+        # and Unicode-to-ASCII expansion. This ensures compliance with RFC 1035
+        # and IDNA's 255-byte limit.
+
+        def get_len(lbls: list[str]) -> int:
+            d = ".".join(lbls)
+            if allow_idn:
+                try:
+                    return len(idna_encode(d))
+                except IDNAError:
+                    # Encoding failed due to length or invalidity.
+                    # Return large number to force trimming.
+                    return 9999
+            return len(d)
+
+        # Trim off labels until total hostname length fits IDNA/DNS limits
+        while get_len(labels) > 253 and len(labels) > 1:
             labels = labels[:-1]
 
         return ".".join(labels)

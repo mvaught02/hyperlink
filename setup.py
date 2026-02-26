@@ -9,7 +9,6 @@ See the docs at http://hyperlink.readthedocs.io.
 
 from setuptools import find_packages, setup
 
-
 __author__ = "Mahmoud Hashemi and Glyph Lefkowitz"
 __version__ = "21.0.1dev"
 __contact__ = "mahmoud@hatnote.com"
