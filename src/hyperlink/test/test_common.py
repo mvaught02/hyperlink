@@ -2,6 +2,8 @@
 Tests for hyperlink.test.common
 """
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 from unittest import TestCase
 from .common import HyperlinkTestCase
