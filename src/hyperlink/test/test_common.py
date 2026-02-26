@@ -1,9 +1,13 @@
 """
 Tests for hyperlink.test.common
 """
-from typing import Any
+
+from typing import TYPE_CHECKING
 from unittest import TestCase
 from .common import HyperlinkTestCase
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 class _ExpectedException(Exception):
